@@ -8,6 +8,8 @@ scikit-learn
 pyaml
 #dill
 mlflow
-# dagshub
-
+dagshub
+fastapi
+uvicorn
+python-multipart
 ##-e .
