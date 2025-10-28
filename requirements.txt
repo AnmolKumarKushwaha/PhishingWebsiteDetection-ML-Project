@@ -4,6 +4,7 @@ pandas
 numpy
 scikit-learn
 joblib
+urllib3
 
 # --- MongoDB ---
 pymongo[srv]

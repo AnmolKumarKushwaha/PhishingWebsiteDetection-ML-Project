@@ -1,0 +1,37 @@
+# Virtual environments
+venv/
+venv_old/
+
+# Notebooks, data, and artifacts
+notebooks/
+Network_Data/
+Artifacts/
+valid_data/
+prediction_output/
+logs/
+# data_schema/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Git and local configs
+.git/
+.github/
+.gitignore
+
+# OS and IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Large CSV or temp data
+*.csv
+*.tsv
+*.zip
+*.json
+*.npy
+*.npz

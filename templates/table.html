@@ -1,21 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data Table</title>
+    <title>Predicted Data</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f7f9fc;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
+            background-color: white;
         }
+
         th, td {
-            border: 1px solid black;
+            border: 1px solid #ccc;
             padding: 8px;
             text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .download-btn {
+            display: block;
+            width: 220px;
+            margin: 30px auto;
+            padding: 12px 20px;
+            text-align: center;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
     <h2>Predicted Data</h2>
-    {{ table | safe }}
+
+    <div>
+        {{ table | safe }}
+    </div>
+
+    <a href="{{ download_link }}" class="download-btn" download>⬇ Download CSV</a>
 </body>
 </html>

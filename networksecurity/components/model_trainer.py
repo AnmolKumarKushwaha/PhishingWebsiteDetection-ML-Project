@@ -1,3 +1,7 @@
+import urllib3
+urllib3.disable_warnings()
+
+
 import os
 import sys
 
@@ -23,21 +27,32 @@ from sklearn.ensemble import (
     GradientBoostingClassifier,
     RandomForestClassifier,
 )
+
+
+# 🔒 Disable OAuth and enforce basic auth **before anything else**
+os.environ["MLFLOW_EXPERIMENTAL_OAUTH2"] = "false"
+os.environ["MLFLOW_TRACKING_INSECURE_TLS"] = "true"
+
+
+# ✅ Set MLflow & DagsHub credentials (ensure HTTPS)
+os.environ["MLFLOW_TRACKING_URI"] = "https://dagshub.com/AnmolKumarKushwaha/networksecurity-combined.mlflow"
+os.environ["MLFLOW_TRACKING_USERNAME"] = "AnmolKumarKushwaha"
+os.environ["MLFLOW_TRACKING_PASSWORD"] = "61505506ff60b4309434a0d8d55f674da9f9bc50"
+
+
 import mlflow
+import dagshub
 from urllib.parse import urlparse
 
-import dagshub
-dagshub.init(repo_owner='AnmolKumarKushwaha', repo_name='networksecurity-combined', mlflow=True)
-# Set DagsHub MLflow URI
-mlflow.set_tracking_uri("https://dagshub.com/AnmolKumarKushwaha/networksecurity-combined.mlflow")
+# ✅ Initialize DagsHub and MLflow
+mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+dagshub.auth.add_app_token(os.environ["MLFLOW_TRACKING_PASSWORD"])
 
-os.environ["MLFLOW_TRACKING_URI"]="https://dagshub.com/AnmolKumarKushwaha/networksecurity-combined.mlflow"
-os.environ["MLFLOW_TRACKING_USERNAME"]="AnmolKumarKushwaha"
-os.environ["MLFLOW_TRACKING_PASSWORD"]="ee06903fac3dee25d0269f0ce27e2846e37bbc66"
-
-
-
-
+dagshub.init(
+    repo_owner="AnmolKumarKushwaha",
+    repo_name="networksecurity-combined",
+    mlflow=True
+)
 
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,data_transformation_artifact:DataTransformationArtifact):
@@ -48,7 +63,6 @@ class ModelTrainer:
             raise NetworkSecurityException(e,sys)
         
     def track_mlflow(self,best_model,classificationmetric):
-        mlflow.set_registry_uri("https://dagshub.com/AnmolKumarKushwaha/networksecurity-combined.mlflow")
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
         with mlflow.start_run() as run:
             f1_score=classificationmetric.f1_score
