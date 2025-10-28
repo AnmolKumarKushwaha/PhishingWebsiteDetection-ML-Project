@@ -18,8 +18,8 @@ requests
 typing-extensions
 
 # # --- MLOps ---
-# mlflow
-# dagshub
+mlflow
+dagshub
 
 # --- API & Server ---
 fastapi
