@@ -1,0 +1,36 @@
+[ 2026-09-15 20:43:48,259 ] 86 dagshub.auth.tokens - WARNING - The added token already exists in the token cache, skipping
+[ 2026-09-15 20:43:49,564 ] 1025 httpx - INFO - HTTP Request: GET https://dagshub.com/api/v1/user "HTTP/1.1 200 OK"
+[ 2026-09-15 20:43:49,579 ] 107 dagshub - INFO - Accessing as AnmolKumarKushwaha
+[ 2026-09-15 20:43:50,481 ] 1025 httpx - INFO - HTTP Request: GET https://dagshub.com/api/v1/repos/AnmolKumarKushwaha/networksecurity-combined "HTTP/1.1 200 OK"
+[ 2026-09-15 20:43:51,504 ] 1025 httpx - INFO - HTTP Request: GET https://dagshub.com/api/v1/user "HTTP/1.1 200 OK"
+[ 2026-09-15 20:43:51,508 ] 107 dagshub - INFO - Initialized MLflow to track repo "AnmolKumarKushwaha/networksecurity-combined"
+[ 2026-09-15 20:43:51,511 ] 107 dagshub - INFO - Repository AnmolKumarKushwaha/networksecurity-combined initialized!
+[ 2026-09-15 21:08:23,582 ] 42 root - INFO - Start data Ingestion
+[ 2026-09-15 21:08:29,078 ] 65 root - INFO - Performed train test split on the dataframe
+[ 2026-09-15 21:08:29,078 ] 67 root - INFO - Exited split_data_as_train_test method of Data_Ingestion class
+[ 2026-09-15 21:08:29,080 ] 75 root - INFO - Exporting train and test file path.
+[ 2026-09-15 21:08:29,207 ] 84 root - INFO - Exported train and test file path.
+[ 2026-09-15 21:08:29,211 ] 45 root - INFO - Data Ingestion completed and artifact: DataIngestionArtifact(trained_file_path='Artifacts\\09_15_2026_20_43_42\\data_ingestion\\ingested\\train.csv', test_file_path='Artifacts\\09_15_2026_20_43_42\\data_ingestion\\ingested\\test.csv')
+[ 2026-09-15 21:08:29,312 ] 55 root - INFO - Initiate the data Validation
+[ 2026-09-15 21:08:29,627 ] 32 root - INFO - Required number of columns:2
+[ 2026-09-15 21:08:29,627 ] 33 root - INFO - Data frame has columns:31
+[ 2026-09-15 21:08:29,628 ] 32 root - INFO - Required number of columns:2
+[ 2026-09-15 21:08:29,628 ] 33 root - INFO - Data frame has columns:31
+[ 2026-09-15 21:08:30,193 ] 63 root - INFO - Entered initiate_data_transformation method of DataTransformation class
+[ 2026-09-15 21:08:30,193 ] 65 root - INFO - Starting data transformation
+[ 2026-09-15 21:08:30,270 ] 48 root - INFO - Entered get_data_trnasformer_object method of Trnasformation class
+[ 2026-09-15 21:08:30,275 ] 53 root - INFO - Initialise KNNImputer with {'missing_values': nan, 'n_neighbors': 3, 'weights': 'uniform'}
+[ 2026-09-15 21:08:33,566 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-15 21:08:33,578 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-15 21:08:33,578 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-15 21:08:33,586 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-15 21:14:31,692 ] 74 root - INFO - Folder logged as artifacts!
+[ 2026-09-15 21:14:31,703 ] 86 root - INFO - Folder logged as artifacts! :fc92e1686ff24492adfd531ba8365d0d
+[ 2026-09-15 21:14:59,052 ] 74 root - INFO - Folder logged as artifacts!
+[ 2026-09-15 21:16:15,147 ] 82 root - INFO - Model logged in mlflow model registry as NetworkSecurityModel
+[ 2026-09-15 21:16:15,148 ] 86 root - INFO - Folder logged as artifacts! :ea558b6efbaa4b63b3305ad17880a847
+[ 2026-09-15 21:16:15,904 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-15 21:16:15,928 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-15 21:16:15,928 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-15 21:16:15,944 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-15 21:16:15,944 ] 199 root - INFO - Model trainer artifact: ModelTrainerArtifact(trained_model_file_path='Artifacts\\09_15_2026_20_43_42\\model_trainer\\trained_model\\model.pkl', train_metric_artifact=ClassificationMetricArtifact(f1_score=0.990994637255894, precision_score=0.9882946518668012, recall_score=0.9937094155844156), test_metric_artifact=ClassificationMetricArtifact(f1_score=0.9757085020242915, precision_score=0.9709911361804996, recall_score=0.9804719283970708))

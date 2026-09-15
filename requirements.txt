@@ -28,6 +28,7 @@ uvicorn
 gunicorn
 python-multipart
 starlette
+setuptools
 
 # --- Optional / Safety ---
 # dill           # (uncomment if you serialize models with dill)

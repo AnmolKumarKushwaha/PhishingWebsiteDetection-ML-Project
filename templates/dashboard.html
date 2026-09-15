@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Network Security · Control Room</title>
+        <style>
+        :root {
+            --bg: #f3f6f4;
+            --ink: #19352e;
+            --muted: #76847e;
+            --green: #187456;
+            --line: #e2e9e4;
+            --mint: #e6f4eb;
+            --surface: #ffffff;
+            --soft-surface: #f8fbf9;
+            --radius: 20px;
+        }
+
+        body.dark-theme {
+            --bg: #101b18;
+            --ink: #e4eee8;
+            --muted: #9aaca3;
+            --green: #66c59c;
+            --line: #2d4038;
+            --mint: #1a342b;
+            --surface: #172621;
+            --soft-surface: #1d3029;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: Inter,Segoe UI,Arial,sans-serif;
+            font-size: 14px;
+            transition: background .25s ease,color .25s ease;
+        }
+
+        body.dark-theme .sidebar { background: #08120f; }
+        body.dark-theme .nav a:hover,
+        body.dark-theme .nav a.active { background: #1d4033; }
+        body.dark-theme .avatar,
+        body.dark-theme .workspace-tag,
+        body.dark-theme .health-card,
+        body.dark-theme .card,
+        body.dark-theme .hero,
+        body.dark-theme .drop,
+        body.dark-theme .pipeline,
+        body.dark-theme .btn.secondary { background: var(--surface); color: var(--ink); }
+        body.dark-theme .workspace-tag,
+        body.dark-theme .health-card,
+        body.dark-theme .card,
+        body.dark-theme .hero,
+        body.dark-theme .drop,
+        body.dark-theme .pipeline { border-color: var(--line); }
+        body.dark-theme .btn.secondary { border-color: var(--line); color: var(--green); }
+        
+        button,a,input {
+            font: inherit;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        button,a,label {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        button:focus-visible,a:focus-visible,input:focus-visible {
+            outline: 3px solid #d6a650;
+            outline-offset: 4px;
+        }
+        
+        button {
+            cursor: pointer;
+        }
+        
+        svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: 235px;
+            background: #103e32;
+            color: #dbece3;
+            padding: 35px 23px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -.6px;
+        }
+        
+        .brand-icon {
+            background: #d9f4b5;
+            color: #174f39;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+        }
+        
+        .brand small {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: 500;
+            color: #a5c3b5;
+            margin-top: 5px;
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            letter-spacing: 1.8px;
+            color: #91b3a3;
+            margin: 57px 12px 17px;
+        }
+        
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .nav a {
+            padding: 13px 15px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border-radius: 10px;
+            color: #b5cec1;
+            font-size: 13px;
+        }
+        
+        .nav a:hover,.nav a.active {
+            background: #285345;
+            color: white;
+        }
+        
+        .nav a.active {
+            box-shadow: inset 3px 0 #cdecae;
+        }
+        
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 20px 12px 0;
+            border-top: 1px solid #315a4c;
+            font-size: 12px;
+            color: #abc7b8;
+            line-height: 1.7;
+        }
+        
+        .sidebar-bottom strong {
+            color: #e0eede;
+            display: block;
+            font-weight: 500;
+        }
+        
+        .main {
+            margin-left: 235px;
+            padding: 0 45px 28px;
+            max-width: 1650px;
+        }
+        
+        .topbar {
+            height: 90px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .breadcrumb {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .breadcrumb b {
+            color: var(--ink);
+            font-weight: 500;
+        }
+        
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 7px 11px;
+            color: var(--ink);
+            background: var(--surface);
+            font-size: 11px;
+        }
+
+        .theme-toggle:hover { color: var(--green); }
+        
+        .docs {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border: 1px solid #d4dfd5;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #e5ede3;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .heading {
+            margin: 32px 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.7px;
+            color: #6c8d78;
+            text-transform: uppercase;
+        }
+        
+        h1 {
+            font-size: 32px;
+            letter-spacing: -1.3px;
+            font-weight: 650;
+            margin: 9px 0 10px;
+        }
+        
+        p {
+            color: var(--muted);
+            line-height: 1.65;
+            margin: 0;
+        }
+        
+        .workspace-tag {
+            border: 1px solid #dce5de;
+            padding: 9px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #667b6d;
+            white-space: nowrap;
+        }
+        
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 22px;
+            background: #123f32;
+            color: #fff;
+            padding: 32px 35px;
+            min-height: 195px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+        }
+        
+        .hero:after {
+            content: "";
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            right: -45px;
+            top: -100px;
+            border: 1px solid #47725c;
+            border-radius: 50%;
+            box-shadow: 0 0 0 34px #ffffff04,0 0 0 68px #ffffff04;
+            pointer-events: none;
+        }
+        
+        .hero .eyebrow {
+            color: #c4e7a4;
+        }
+        
+        .hero h2 {
+            font-size: 28px;
+            letter-spacing: -.8px;
+            margin: 12px 0 10px;
+            font-weight: 550;
+        }
+        
+        .hero p {
+            color: #b7cfc0;
+            font-size: 13px;
+            max-width: 440px;
+        }
+        
+        .hero-art {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            width: 112px;
+            height: 112px;
+            background: #ffffff09;
+            border: 1px solid #ffffff25;
+            border-radius: 30px;
+            margin-right: 35px;
+            transform: rotate(-8deg);
+        }
+        
+        .hero-art svg {
+            width: 65px;
+            height: 65px;
+            color: #d4edb9;
+            transform: rotate(8deg);
+            stroke-width: 1.2;
+        }
+        
+        .health-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin: 20px 0 30px;
+        }
+        
+        .health-card {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            background: white;
+            padding: 18px 22px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+        }
+        
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #eff5ef;
+            color: #528267;
+        }
+        
+        .health-copy {
+            flex: 1;
+        }
+        
+        .health-copy strong {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .health-copy small {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            padding: 6px 9px;
+            border-radius: 20px;
+            background: #f5f0df;
+            color: #927129;
+        }
+        
+        .badge:before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .badge.ready {
+            background: #eaf6eb;
+            color: #39805a;
+        }
+        
+        .badge.offline {
+            background: #fbeee9;
+            color: #b25b42;
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .section-title h2 {
+            font-size: 17px;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -.3px;
+        }
+        
+        .section-title span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 25px;
+            scroll-margin-top: 20px;
+        }
+        
+        .card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            font-size: 10px;
+            color: #9aa79e;
+            letter-spacing: 1px;
+        }
+        
+        .card h3 {
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: -.5px;
+            margin: 0 0 9px;
+        }
+        
+        .card p {
+            font-size: 12px;
+            min-height: 40px;
+        }
+        
+        .drop {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 9px;
+            min-height: 119px;
+            padding: 18px;
+            background: #f8faf7;
+            border: 1px dashed #cbdacb;
+            border-radius: 12px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: .2s;
+        }
+        
+        .drop:hover,.drop.drag {
+            background: #edf6e9;
+            border-color: #609d72;
+        }
+        
+        .drop:focus-within {
+            outline: 3px solid #aecda8;
+        }
+        
+        .drop svg {
+            color: #6e937a;
+            width: 25px;
+            height: 25px;
+        }
+        
+        .drop strong {
+            font-weight: 500;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+        }
+        
+        .drop small {
+            font-size: 10px;
+            color: #91a090;
+        }
+        
+        .drop input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 12px 17px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: var(--green);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background .2s,transform .2s;
+        }
+        
+        .btn:hover {
+            background: #125d45;
+            transform: translateY(-1px);
+        }
+        
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .btn.full {
+            width: 100%;
+            margin-top: 17px;
+        }
+        
+        .btn.secondary {
+            background: #f4f7f3;
+            border: 1px solid #dce6da;
+            color: #4c6a54;
+        }
+        
+        .btn:disabled {
+            opacity: .55;
+            cursor: wait;
+            transform: none;
+        }
+        
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            background: #f8faf7;
+            border-radius: 12px;
+            padding: 24px 12px;
+            margin-top: 20px;
+            min-height: 119px;
+        }
+        
+        .pipeline span {
+            text-align: center;
+            font-size: 9px;
+            color: #7d8f81;
+        }
+        
+        .pipeline b {
+            display: grid;
+            place-items: center;
+            margin: 0 auto 9px;
+            width: 29px;
+            height: 29px;
+            border-radius: 50%;
+            background: #e7efe3;
+            color: #65855f;
+            font-size: 11px;
+        }
+        
+        .pipeline i {
+            height: 1px;
+            background: #d9e2d4;
+            flex: 1;
+            max-width: 28px;
+            margin-bottom: 22px;
+        }
+        
+        .note {
+            font-size: 10px;
+            color: #98a293;
+            margin-top: 13px;
+            line-height: 1.5;
+        }
+        
+        .result {
+            font-size: 11px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            max-height: 240px;
+            overflow: auto;
+            color: #59725e;
+        }
+        
+        .result:not(:empty) {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f3f7f1;
+            border-radius: 8px;
+        }
+        
+        .result.error {
+            color: #a54938;
+            background: #fff0eb;
+        }
+        
+        .wide {
+            grid-column: 1/-1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .export {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .export p {
+            min-height: 0;
+            margin-bottom: 13px;
+        }
+        
+        .prediction {
+            border-left: 1px solid var(--line);
+            padding-left: 30px;
+        }
+        
+        .prediction h3 {
+            font-size: 16px;
+        }
+        
+        .prediction p {
+            min-height: 0;
+            font-size: 11px;
+        }
+        
+        .prediction-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .file-pick {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+        
+        .file-pick input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-pick:focus-within {
+            outline: 3px solid #aecda8;
+        }
+        
+        footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+            color: #8b9c90;
+            font-size: 10px;
+        }
+        
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @media(min-width:1500px) {
+            .main {
+                padding-left: 65px;
+                padding-right: 65px;
+            }
+        }
+        
+        @media(max-width:1100px) {
+            .sidebar {
+                width: 195px;
+                padding: 30px 17px;
+            }
+        
+            .main {
+                margin-left: 195px;
+                padding: 0 25px 25px;
+            }
+        
+            .wide {
+                grid-template-columns: 1fr;
+            }
+        
+            .prediction {
+                border-left: 0;
+                border-top: 1px solid var(--line);
+                padding: 23px 0 0;
+            }
+        }
+        
+        @media(max-width:760px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                padding: 18px 20px;
+                display: block;
+            }
+        
+            .brand {
+                font-size: 17px;
+            }
+        
+            .brand-icon {
+                padding: 7px;
+            }
+        
+            .nav-label,.nav,.sidebar-bottom {
+                display: none;
+            }
+        
+            .main {
+                margin: 0;
+                padding: 0 18px 25px;
+            }
+        
+            .topbar {
+                height: 60px;
+            }
+        
+            .heading {
+                margin: 25px 0 20px;
+            }
+        
+            .heading p {
+                font-size: 12px;
+            }
+        
+            h1 {
+                font-size: 27px;
+            }
+        
+            .workspace-tag {
+                display: none;
+            }
+        
+            .hero {
+                padding: 25px;
+                min-height: 180px;
+            }
+        
+            .hero h2 {
+                font-size: 23px;
+            }
+        
+            .hero-art {
+                display: none;
+            }
+        
+            .health-row {
+                gap: 10px;
+            }
+        
+            .health-card {
+                padding: 13px;
+                gap: 9px;
+                flex-wrap: wrap;
+            }
+        
+            .health-card .icon-box {
+                display: none;
+            }
+        
+            .health-copy {
+                min-width: 80px;
+            }
+        
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        
+            .wide {
+                grid-column: auto;
+            }
+        
+            .section-title span {
+                display: none;
+            }
+        
+            .card {
+                padding: 21px;
+            }
+        
+            .prediction-controls {
+                flex-wrap: wrap;
+            }
+        
+            .prediction-controls .btn {
+                flex-grow: 1;
+            }
+        
+            footer {
+                flex-wrap: wrap;
+            }
+        
+            .docs {
+                font-size: 11px;
+            }
+        }
+        
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                animation: none!important;
+                transition: none!important;
+                scroll-behavior: auto!important;
+            }
+        }
+
+        /* Visual refresh */
+        :root {
+            --bg: #f5f7f9;
+            --ink: #1b3433;
+            --muted: #657b77;
+            --green: #117c61;
+            --line: #e1e9e7;
+            --radius: 22px;
+        }
+        body {
+            background: radial-gradient(ellipse at 90% 0%, #e5efea 0, transparent 50%), var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+        .sidebar {
+            width: 245px;
+            padding: 34px 22px;
+            background: radial-gradient(ellipse at 0 100%, #184f44 0, transparent 55%), #102e2b;
+            border-right: 1px solid #ffffff15;
+        }
+        .brand { font-size: 17px; gap: 11px; letter-spacing: -0.5px; }
+        .brand-icon {
+            padding: 11px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #d7f6b2, #8ed7b4);
+            box-shadow: 0 4px 22px #a4e3b320;
+        }
+        .brand small { font-size: 9px; letter-spacing: 2.4px; }
+        .nav-label { margin-top: 54px; font-size: 9px; color: #83a69b; }
+        .nav { gap: 9px; }
+        .nav a { min-height: 49px; border: 1px solid transparent; transition: background .2s; }
+        .nav a.active {
+            background: linear-gradient(110deg, #325e50, #29473e);
+            border-color: #adcbb31c;
+            color: #e7f7d8;
+            box-shadow: inset 3px 0 #c8eea4, 0 5px 14px #0000000a;
+        }
+        .sidebar-bottom {
+            background: #ffffff06;
+            border: 1px solid #ffffff0f;
+            border-radius: 15px;
+            padding: 18px 14px;
+            font-size: 11px;
+        }
+        .sidebar-bottom strong { font-size: 12px; margin-bottom: 6px; }
+        .main { margin-left: 245px; max-width: 1720px; padding: 0 42px 30px; }
+        .topbar { height: 78px; }
+        .avatar { background: #fff; box-shadow: 0 3px 8px #19352e06; }
+        .heading { margin: 29px 0 25px; }
+        h1 { font-size: 35px; letter-spacing: -1.3px; margin-top: 8px; }
+        .heading p { font-size: 13px; }
+        .workspace-tag { background: #ffffffa0; padding: 10px 14px; font-size: 10px; }
+        .hero {
+            isolation: isolate;
+            min-height: 260px;
+            padding: 34px 38px;
+            border: 1px solid #2a6151;
+            border-radius: 24px;
+            background: radial-gradient(ellipse at 85% 75%, #37705b 0, transparent 48%), linear-gradient(110deg, #113a31, #183e36);
+            box-shadow: 0 12px 32px #143e3215;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: .24;
+            background-image: radial-gradient(#b9d4b7 0.6px, transparent 0.6px);
+            background-size: 19px 19px;
+            -webkit-mask-image: linear-gradient(90deg, transparent 35%, #000);
+            mask-image: linear-gradient(90deg, transparent 35%, #000);
+        }
+        .hero::after { display: none; }
+        .hero-copy { position: relative; z-index: 2; max-width: 550px; }
+        .hero .eyebrow { color: #c4e8a8; font-size: 9px; letter-spacing: 2px; }
+        .hero h2 { font-size: clamp(27px, 2.8vw, 42px); font-weight: 600; line-height: 1.14; letter-spacing: -1.4px; margin: 15px 0; }
+        .hero h2 em { color: #caeaaa; font-style: normal; }
+        .hero p { max-width: 390px; line-height: 1.75; font-size: 12px; color: #bacdc5; }
+        .hero-chips { display: flex; gap: 9px; margin-top: 22px; flex-wrap: wrap; }
+        .hero-chips span { display: inline-flex; align-items: center; gap: 6px; color: #daebd6; border: 1px solid #accba32e; background: #c6e5b00a; border-radius: 6px; padding: 7px 9px; font-size: 9px; }
+        .hero-chips svg { width: 12px; height: 12px; }
+        .hero-art {
+            flex-shrink: 0;
+            width: 235px;
+            height: 235px;
+            margin: -15px 12px -15px 0;
+            border: 1px solid #cbebc525;
+            border-radius: 50%;
+            background: radial-gradient(circle, #c0e4a812, transparent 70%);
+            transform: none;
+            box-shadow: 0 0 0 28px #bde5a905, 0 0 0 54px #bde5a904;
+        }
+        .hero-art::before { content: ''; position: absolute; inset: 26px; border: 1px dashed #c3e5bc45; border-radius: 50%; }
+        .shield-core { width: 107px; height: 119px; display: grid; place-items: center; border-radius: 30px; border: 1px solid #ceeac16b; background: linear-gradient(140deg, #97c5a850, #779b7510); box-shadow: 0 16px 45px #071d2840, inset 0 1px #ffffff30; transform: rotate(-7deg); }
+        .hero-art .shield-core svg { transform: rotate(7deg); width: 68px; height: 68px; color: #ddf4b9; }
+        .orbit-node { position: absolute; width: 35px; height: 35px; display: grid; place-items: center; background: #2d5948; border: 1px solid #b5d2ad66; border-radius: 10px; box-shadow: 0 6px 16px #092b2644; }
+        .orbit-node svg { width: 16px; height: 16px; transform: none; }
+        .node-one { left: 3px; top: 24px; }
+        .node-two { right: -9px; top: 113px; }
+        .node-three { left: 45px; bottom: -8px; }
+        .health-row { margin: 19px 0 29px; gap: 19px; }
+        .health-card { padding: 17px 21px; border-radius: 16px; box-shadow: 0 4px 12px #19352e03; }
+        .health-card .icon-box { background: #f0f5f2; }
+        .health-copy strong { font-size: 13px; }
+        .health-copy small { font-size: 10px; margin-top: 6px; }
+        .badge { padding: 7px 10px; font-weight: 600; }
+        .section-title { margin-bottom: 18px; }
+        .section-title h2 { font-size: 19px; letter-spacing: -.5px; }
+        .section-title span { font-size: 10px; }
+        .card { padding: 26px; box-shadow: 0 5px 22px #19352e04; transition: box-shadow .2s, border-color .2s; }
+        .card:hover { border-color: #c3d7cc; box-shadow: 0 10px 28px #19352e09; }
+        .card-head { margin-bottom: 18px; }
+        .icon-box { width: 43px; height: 43px; flex-shrink: 0; background: #edf4ed; border: 1px solid #e1eddf; border-radius: 13px; }
+        #training .card-head .icon-box { color: #75834f; background: #f1f3e5; border-color: #e9ecd9; }
+        .step { font-size: 9px; font-weight: 600; color: #83978e; letter-spacing: 1.3px; background: #f6f8f5; border: 1px solid #edf1e9; border-radius: 30px; padding: 7px 10px; }
+        .card h3 { font-size: 21px; letter-spacing: -.6px; }
+        .card p { line-height: 1.75; color: #6d7f79; }
+        .drop { background: linear-gradient(120deg, #f8fbf5, #f4f8f5); border-color: #bdd2bd; min-height: 128px; gap: 10px; }
+        .drop svg { background: white; box-sizing: content-box; padding: 9px; border: 1px solid #e1ebdf; border-radius: 11px; width: 19px; height: 19px; }
+        .drop strong { color: #486d55; }
+        .drop small { color: #6d846f; }
+        .btn { min-height: 42px; border-radius: 10px; background: linear-gradient(120deg, #168062, #116349); box-shadow: 0 3px 7px #12634913; }
+        .btn.full { margin-top: 18px; }
+        .btn.secondary { background: #f5f8f3; box-shadow: none; }
+        .btn.secondary:hover { background: #eaf3e7; }
+        .btn:disabled { cursor: not-allowed; }
+        .note { color: #738576; font-size: 10px; }
+        .pipeline { min-height: 128px; background: linear-gradient(120deg, #f8faf4, #f6f8ef); }
+        .pipeline b { width: 32px; height: 32px; background: #fff; border: 1px solid #dce8d2; box-shadow: 0 3px 5px #1a4c2905; }
+        .pipeline span { color: #677c5f; }
+        .wide { background: linear-gradient(120deg, #ffffff, #fbfcf8); }
+        .export h3 { font-size: 19px; }
+        .prediction h3 { font-size: 18px; }
+        #download-predictions-button { color: #235d46; background: #eaf3e4; border-color: #d8e6ce; }
+        #download-predictions-button:disabled { color: #7a8873; background: #f3f6ef; opacity: .65; }
+        .result:not(:empty) { border: 1px solid #e0ebda; color: #366744; background: #f3f8ee; }
+        .result.error { color: #a54938; background: #fff0eb; border-color: #f4d5cd; }
+        @media (min-width: 1500px) { .main { padding-left: 58px; padding-right: 58px; } }
+        @media (max-width: 1150px) {
+            .sidebar { width: 212px; padding: 29px 16px; }
+            .brand { font-size: 15px; gap: 8px; }
+            .brand-icon { padding: 8px; }
+            .main { margin-left: 212px; padding: 0 27px 26px; }
+            .hero { padding: 29px; }
+            .hero-art { width: 175px; height: 175px; margin-right: 0; }
+            .hero h2 { font-size: 31px; }
+            .hero-copy { max-width: 360px; }
+            .node-two { top: 85px; }
+            .shield-core { width: 82px; height: 93px; border-radius: 23px; }
+            .hero-art .shield-core svg { width: 53px; height: 53px; }
+        }
+        @media (max-width: 900px) and (min-width: 761px) {
+            .hero-art { display: none; }
+            .workspace-tag { display: none; }
+            .grid { grid-template-columns: 1fr; }
+            .wide { grid-column: auto; }
+            .section-title span { display: none; }
+        }
+        @media (max-width: 760px) {
+            .sidebar { width: 100%; padding: 17px 20px; }
+            .brand { font-size: 17px; }
+            .main { margin-left: 0; padding: 0 18px 25px; }
+            .topbar { height: 61px; }
+            h1 { font-size: 29px; }
+            .heading { margin: 24px 0; }
+            .hero { min-height: 250px; padding: 27px; }
+            .hero h2 { font-size: 34px; }
+            .hero-copy { max-width: 100%; }
+            .hero-art { display: none; }
+            .health-card { padding: 14px; }
+            .health-row { gap: 12px; }
+            .card { padding: 22px; }
+            .section-title h2 { font-size: 18px; }
+        }
+    </style>
+    </head>
+    <body>
+        <svg style="display:none" aria-hidden="true">
+            <defs>
+                <symbol id="shield" viewBox="0 0 24 24">
+                    <path d="M12 3 3.5 6.5V12c0 5 8.5 9 8.5 9s8.5-4 8.5-9V6.5L12 3Z"/>
+                    <path d="m8 12 3 3 5-6"/>
+                </symbol>
+                <symbol id="database" viewBox="0 0 24 24">
+                    <ellipse cx="12" cy="5" rx="8" ry="3"/>
+                    <path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/>
+                </symbol>
+                <symbol id="grid" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                </symbol>
+                <symbol id="upload" viewBox="0 0 24 24">
+                    <path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5"/>
+                </symbol>
+                <symbol id="download" viewBox="0 0 24 24">
+                    <path d="M12 3v13m-5-5 5 5 5-5M4 16v5h16v-5"/>
+                </symbol>
+                <symbol id="arrow" viewBox="0 0 24 24">
+                    <path d="M5 12h14m-6-6 6 6-6 6"/>
+                </symbol>
+                <symbol id="refresh" viewBox="0 0 24 24">
+                    <path d="M20 10a8 8 0 0 0-14-5L3 8m0-5v5h5M4 14a8 8 0 0 0 14 5l3-3m0 5v-5h-5"/>
+                </symbol>
+                <symbol id="code" viewBox="0 0 24 24">
+                    <path d="m7 7-5 5 5 5m10-10 5 5-5 5M14 4l-4 16"/>
+                </symbol>
+            </defs>
+        </svg>
+        <aside class="sidebar">
+            <a href="#" class="brand">
+                <span class="brand-icon">
+                    <svg>
+                        <use href="#shield"/>
+                    </svg>
+                </span>
+                <span>
+                    Network Security
+                    <small>CONTROL ROOM</small>
+                </span>
+            </a>
+            <div class="nav-label">WORKSPACE</div>
+            <nav class="nav" aria-label="Main navigation">
+                <a href="#overview" class="active">
+                    <svg>
+                        <use href="#grid"/>
+                    </svg>
+                    Overview
+                </a>
+                <a href="#dataset">
+                    <svg>
+                        <use href="#database"/>
+                    </svg>
+                    Dataset
+                </a>
+                <a href="#training">
+                    <svg>
+                        <use href="#refresh"/>
+                    </svg>
+                    Training pipeline
+                </a>
+                <a href="#predictions">
+                    <svg>
+                        <use href="#shield"/>
+                    </svg>
+                    Predictions
+                </a>
+                <a href="/docs">
+                    <svg>
+                        <use href="#code"/>
+                    </svg>
+                    API documentation
+                </a>
+            </nav>
+            <div class="sidebar-bottom">
+                <strong>Your data. Your pipeline.</strong>
+                Manage your phishing detection
+                <br>
+                workflow in one place.
+            </div>
+        </aside>
+        <main class="main" id="overview">
+            <div class="topbar">
+                <div class="breadcrumb">
+                    Workspace
+                    &nbsp;
+                    /
+                    &nbsp;
+                    <b>Overview</b>
+                </div>
+                <div class="top-actions">
+                    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+                        <span id="theme-icon">☾</span>
+                        <span id="theme-label">Dark mode</span>
+                    </button>
+                    <a href="/docs" class="docs">
+                        API documentation
+                        <svg style="width:14px;height:14px">
+                            <use href="#arrow"/>
+                        </svg>
+                    </a>
+                    <span class="avatar" title="Admin workspace">AD</span>
+                </div>
+            </div>
+            <div class="heading">
+                <div>
+                    <div class="eyebrow">Your security workspace</div>
+                    <h1>Pipeline overview</h1>
+                    <p>Good data. Better models. A safer web.</p>
+                </div>
+                <span class="workspace-tag">Phishing detection · ML workspace</span>
+            </div>
+            <section class="hero">
+                <div class="hero-copy">
+                    <div class="eyebrow">From dataset to detection</div>
+                    <h2>Smarter models.<br><em>Stronger protection.</em></h2>
+                    <p>Manage your training data, refresh your model, and turn website features into predictions. All from one workspace.</p>
+                    <div class="hero-chips">
+                        <span><svg><use href="#database"/></svg>Prepare data</span>
+                        <span><svg><use href="#refresh"/></svg>Train models</span>
+                        <span><svg><use href="#shield"/></svg>Detect phishing</span>
+                    </div>
+                </div>
+                <div class="hero-art" aria-hidden="true">
+                    <div class="shield-core"><svg><use href="#shield"/></svg></div>
+                    <span class="orbit-node node-one"><svg><use href="#database"/></svg></span>
+                    <span class="orbit-node node-two"><svg><use href="#code"/></svg></span>
+                    <span class="orbit-node node-three"><svg><use href="#refresh"/></svg></span>
+                </div>
+            </section>
+            <div class="health-row">
+                <div class="health-card">
+                    <span class="icon-box">
+                        <svg>
+                            <use href="#database"/>
+                        </svg>
+                    </span>
+                    <div class="health-copy">
+                        <strong>MongoDB Atlas</strong>
+                        <small>Training data connection</small>
+                    </div>
+                    <span class="badge" id="mongo-status" role="status">Checking</span>
+                </div>
+                <div class="health-card">
+                    <span class="icon-box">
+                        <svg>
+                            <use href="#shield"/>
+                        </svg>
+                    </span>
+                    <div class="health-copy">
+                        <strong>Prediction model</strong>
+                        <small>Inference availability</small>
+                    </div>
+                    <span class="badge" id="model-status" role="status">Checking</span>
+                </div>
+            </div>
+            <div class="section-title">
+                <h2>Manage your workflow</h2>
+                <span>Prepare your data. Train your model. Run predictions.</span>
+            </div>
+            <section class="grid">
+                <article class="card" id="dataset">
+                    <div class="card-head">
+                        <span class="icon-box">
+                            <svg>
+                                <use href="#database"/>
+                            </svg>
+                        </span>
+                        <span class="step">01 / DATASET</span>
+                    </div>
+                    <h3>Start with your data</h3>
+                    <p>Upload a labeled CSV to replace your current Atlas dataset and prepare for the next training run.</p>
+                    <label class="drop" id="training-drop">
+                        <svg>
+                            <use href="#upload"/>
+                        </svg>
+                        <strong id="training-name">Click to browse or drop your CSV here</strong>
+                        <small id="training-meta">Training dataset · Include the target column</small>
+                        <input id="training-file" type="file" accept=".csv,text/csv" aria-label="Choose training CSV">
+                    </label>
+                    <button class="btn full" id="upload-button">
+                        <svg>
+                            <use href="#upload"/>
+                        </svg>
+                        Upload dataset
+                        <svg>
+                            <use href="#arrow"/>
+                        </svg>
+                    </button>
+                    <div class="note">Uploading replaces the current collection.</div>
+                    <div class="result" id="upload-result" role="status" aria-live="polite"></div>
+                </article>
+                <article class="card" id="training">
+                    <div class="card-head">
+                        <span class="icon-box">
+                            <svg>
+                                <use href="#refresh"/>
+                            </svg>
+                        </span>
+                        <span class="step">02 / TRAINING</span>
+                    </div>
+                    <h3>Build a better model</h3>
+                    <p>Run your training pipeline on the current dataset to refresh the model used for predictions.</p>
+                    <div class="pipeline" aria-label="Ingest, validate, transform, train, refresh">
+                        <span>
+                            <b>1</b>
+                            Ingest
+                        </span>
+                        <i></i>
+                        <span>
+                            <b>2</b>
+                            Validate
+                        </span>
+                        <i></i>
+                        <span>
+                            <b>3</b>
+                            Transform
+                        </span>
+                        <i></i>
+                        <span>
+                            <b>4</b>
+                            Train
+                        </span>
+                        <i></i>
+                        <span>
+                            <b>5</b>
+                            Refresh
+                        </span>
+                    </div>
+                    <button class="btn full" id="train-button">
+                        <svg>
+                            <use href="#refresh"/>
+                        </svg>
+                        Start training
+                        <svg>
+                            <use href="#arrow"/>
+                        </svg>
+                    </button>
+                    <div class="note">Using new data? Upload your replacement dataset first.</div>
+                    <div class="result" id="train-result" role="status" aria-live="polite"></div>
+                </article>
+                <article class="card wide">
+                    <div class="export">
+                        <span class="icon-box">
+                            <svg>
+                                <use href="#download"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <div class="eyebrow" style="margin-bottom:8px">03 / DATA EXCHANGE</div>
+                            <h3>Take your data with you</h3>
+                            <p>Export the complete current Atlas collection.</p>
+                            <a class="btn secondary" href="/data/download">
+                                <svg>
+                                    <use href="#download"/>
+                                </svg>
+                                Download dataset
+                            </a>
+                        </div>
+                    </div>
+                    <div class="prediction" id="predictions">
+                        <h3>Ready to run predictions?</h3>
+                        <p>Choose a feature-only CSV, without the target column.</p>
+                        <div class="prediction-controls">
+                            <label class="btn secondary file-pick">
+                                <span id="prediction-name">Choose CSV file</span>
+                                <input type="file" id="prediction-file" accept=".csv,text/csv" aria-label="Choose prediction CSV">
+                            </label>
+                            <button class="btn" id="predict-button">
+                                Run prediction
+                                <svg>
+                                    <use href="#arrow"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="result" id="prediction-result" role="status" aria-live="polite"></div>
+                        <button class="btn secondary full" id="download-predictions-button" disabled>
+                            <svg><use href="#download"/></svg>
+                            Download predictions CSV
+                        </button>
+                        <div class="note">
+                            Run a prediction first, then download predictions.csv with your
+                            original data and the predicted result column.
+                        </div>
+                        <div class="result" id="download-result" role="status" aria-live="polite"></div>
+                    </div>
+                </article>
+            </section>
+            <footer>
+                <span>Network Security Control Room</span>
+                <span>Dataset management
+                    &nbsp;
+                    /
+                    &nbsp;
+                    Model training
+                    &nbsp;
+                    /
+                    &nbsp;
+                    Predictions</span>
+            </footer>
+        </main>
+        <script>
+        // DOM helpers and selected files.
+        const $ = (id) => document.getElementById(id);
+        const files = {};
+
+        const themeToggle = $('theme-toggle');
+        const themeIcon = $('theme-icon');
+        const themeLabel = $('theme-label');
+
+        function applyTheme(theme) {
+            const dark = theme === 'dark';
+            document.body.classList.toggle('dark-theme', dark);
+            themeIcon.textContent = dark ? '☀' : '☾';
+            themeLabel.textContent = dark ? 'Light mode' : 'Dark mode';
+            themeToggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+            themeToggle.setAttribute('aria-pressed', String(dark));
+        }
+
+        applyTheme(localStorage.getItem('network-security-theme') || 'light');
+        themeToggle.addEventListener('click', () => {
+            const theme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+            localStorage.setItem('network-security-theme', theme);
+            applyTheme(theme);
+        });
+        
+        function selectFile(id, file) {
+            files[id] = file;
+            if (id === 'prediction-file') {
+                $('download-predictions-button').disabled = true;
+                output('download-result', '');
+            }
+            const training = id === 'training-file';
+            const label = $(training ? 'training-name' : 'prediction-name');
+        
+            label.textContent = file
+                ? file.name
+                : training
+                    ? 'Click to browse or drop your CSV here'
+                    : 'Choose CSV file';
+        
+            if (training) {
+                $('training-meta').textContent = file
+                    ? (file.size / 1024).toFixed(1) + ' KB · Ready to upload'
+                    : 'Training dataset · Include the target column';
+            }
+        }
+        
+        ['training-file', 'prediction-file'].forEach((id) => {
+            $(id).addEventListener('change', () => {
+                selectFile(id, $(id).files[0]);
+            });
+        });
+        
+        // Drag-and-drop support for the training dataset.
+        const drop = $('training-drop');
+        
+        ['dragenter', 'dragover'].forEach((event) => {
+            drop.addEventListener(event, (e) => {
+                e.preventDefault();
+                drop.classList.add('drag');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach((event) => {
+            drop.addEventListener(event, (e) => {
+                e.preventDefault();
+                drop.classList.remove('drag');
+            });
+        });
+        
+        drop.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length) {
+                selectFile('training-file', e.dataTransfer.files[0]);
+            }
+        });
+        
+        // Display real connection and model status from the backend.
+        function healthState(id, value) {
+            const element = $(id);
+            element.textContent = typeof value === 'string' ? value : 'Unknown';
+            element.className = 'badge';
+            element.classList.toggle('ready', value === 'ready');
+            element.classList.toggle('offline', value === 'unavailable');
+        }
+        
+        async function refreshHealth() {
+            try {
+                const response = await fetch('/health');
+                if (!response.ok) {
+                    throw new Error('Health check failed.');
+                }
+        
+                const data = await response.json();
+                healthState('mongo-status', data.mongodb);
+                healthState('model-status', data.model);
+            } catch {
+                healthState('mongo-status', 'unavailable');
+                healthState('model-status', 'unavailable');
+            }
+        }
+        
+        function output(id, message, error = false) {
+            $(id).textContent = message;
+            $(id).classList.toggle('error', error);
+        }
+        
+        // Accept both JSON and plain-text API responses.
+        async function readResponse(response) {
+            const text = await response.text();
+            let data;
+        
+            try {
+                data = JSON.parse(text);
+            } catch {
+                data = text;
+            }
+        
+            if (!response.ok) {
+                const detail = data?.detail || data?.message || data
+                    || `Request failed (${response.status})`;
+        
+                throw new Error(
+                    typeof detail === 'string'
+                        ? detail
+                        : JSON.stringify(detail, null, 2)
+                );
+            }
+        
+            return typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        }
+        
+        function lock(button, busy) {
+            if (busy) {
+                button.dataset.label = button.innerHTML;
+                button.textContent = 'Working…';
+            } else {
+                button.innerHTML = button.dataset.label;
+            }
+        
+            button.disabled = busy;
+        }
+        
+        // Upload a training or prediction CSV.
+        async function sendFile(endpoint, inputId, resultId, buttonId) {
+            const file = files[inputId];
+        
+            if (!file) {
+                output(resultId, 'Choose a CSV file first.', true);
+                return;
+            }
+        
+            if (!/\.csv$/i.test(file.name)) {
+                output(resultId, 'Please select a .csv file.', true);
+                return;
+            }
+        
+            const button = $(buttonId);
+            if (inputId === 'prediction-file') {
+                $('download-predictions-button').disabled = true;
+                output('download-result', '');
+            }
+            lock(button, true);
+            output(resultId, 'Processing your file…');
+        
+            try {
+                const form = new FormData();
+                form.append('file', file);
+        
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: form
+                });
+        
+                const responseText = await readResponse(response);
+                let message = responseText;
+                try {
+                    const data = JSON.parse(responseText);
+                    message = typeof data.message === 'string' ? data.message : responseText;
+                } catch {
+                    // The prediction endpoint may return an HTML results page.
+                    if (inputId === 'prediction-file' &&
+                        (response.headers.get('content-type') || '').includes('text/html')) {
+                        message = 'Prediction completed. Download your predictions CSV below.';
+                    }
+                }
+                output(resultId, message);
+                if (inputId === 'prediction-file' && files[inputId] === file) {
+                    $('download-predictions-button').disabled = false;
+                    output('download-result', 'Your predictions are ready to download.');
+                }
+                await refreshHealth();
+            } catch (error) {
+                output(resultId, error.message, true);
+            } finally {
+                lock(button, false);
+            }
+        }
+        
+        $('upload-button').onclick = () => {
+            sendFile('/data/upload', 'training-file', 'upload-result', 'upload-button');
+        };
+        
+        $('predict-button').onclick = () => {
+            sendFile('/predict', 'prediction-file', 'prediction-result', 'predict-button');
+        };
+        
+        // Download the CSV generated by the most recent successful prediction.
+        $('download-predictions-button').onclick = async () => {
+            const button = $('download-predictions-button');
+            const predictedFile = files['prediction-file'];
+            lock(button, true);
+            output('download-result', 'Preparing predictions.csv…');
+
+            try {
+                const response = await fetch('/download', { cache: 'no-store' });
+                if (!response.ok) {
+                    await readResponse(response);
+                }
+
+                const blob = await response.blob();
+                if (!blob.size) {
+                    throw new Error('The prediction file is empty. Run prediction again.');
+                }
+
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'predictions.csv';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+                output('download-result', 'Download started: predictions.csv');
+            } catch (error) {
+                output('download-result', error.message, true);
+            } finally {
+                lock(button, false);
+                if (files['prediction-file'] !== predictedFile) {
+                    button.disabled = true;
+                }
+            }
+        };
+
+        // Start the existing training endpoint.
+        $('train-button').onclick = async () => {
+            const button = $('train-button');
+            lock(button, true);
+            $('upload-button').disabled = true;
+            output('train-result', 'Training is in progress. This may take a few minutes.');
+        
+            try {
+                const response = await fetch('/train');
+                output('train-result', await readResponse(response));
+                await refreshHealth();
+            } catch (error) {
+                output('train-result', error.message, true);
+            } finally {
+                lock(button, false);
+                $('upload-button').disabled = false;
+            }
+        };
+        
+        // Highlight the selected navigation section.
+        document.querySelectorAll('.nav a[href^="#"]').forEach((link) => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.nav a').forEach((item) => {
+                    item.classList.remove('active');
+                });
+                link.classList.add('active');
+            });
+        });
+        
+        refreshHealth();
+    </script>
+    </body>
+</html>
