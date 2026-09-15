@@ -372,3 +372,4 @@ Planned improvements for the next versions include:
 - Validation occurs before existing MongoDB data is deleted.
 - Call `/train` after `/data/upload` to train on the replacement dataset.
 - The current MLflow registry call registers the selected classifier model; local inference uses the saved preprocessor and model artifacts.
+### Network Security Projects For Phishing Data
