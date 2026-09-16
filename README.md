@@ -1,6 +1,7 @@
 # Network Security Phishing Detection
 
 Live application: https://phishingwebsitedetection-ml-project.onrender.com
+
 Live application: https://phishingwebsitedetection-ml-project-image.onrender.com
 
 Docker Image: https://hub.docker.com/r/anmolkumarkushwaha/phishingwebsitedetection-ml-project
@@ -14,6 +15,16 @@ Docker Image: https://hub.docker.com/r/anmolkumarkushwaha/phishingwebsitedetecti
 ![Dashboard preview - dark theme](notebooks/Third.png)
 
 ![API documentation](notebooks/APIs.png)
+
+![DagsHub dashboard - overview](notebooks/Dagshub1.png)
+
+![DagsHub dashboard - experiments](notebooks/Dagshub2.png)
+
+![DagsHub dashboard - model registry](notebooks/Dagshub3.png)
+
+![MLflow dashboard - overview](notebooks/MLFlow1.png)
+
+![MLflow dashboard - metrics](notebooks/MLFlow2.png)
 
 **An end-to-end machine learning application for detecting phishing websites from URL and webpage security features.**
 
