@@ -1,31 +1,26 @@
-#  Use a lightweight Python base image
-FROM python:3.10-slim
+# Match the project's Python minor version
+FROM python:3.14-slim
 
-#  Set working directory inside container
 WORKDIR /app
 
-#  Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Non-sensitive settings
+ENV PYTHONUNBUFFERED=1 \
+	PYTHONDONTWRITEBYTECODE=1 \
+	PORT=8000
 
-#  Copy the rest of the app
-COPY . /app
+# Git for GitPython/DagsHub and certificates for HTTPS
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends git ca-certificates \
+	&& rm -rf /var/lib/apt/lists/*
 
-#  Expose the FastAPI port
+# Copy application files according to .dockerignore
+# Copying first also supports "-e ." in requirements.txt
+COPY . .
+
+# Install project dependencies
+RUN python -m pip install --no-cache-dir -r requirements.txt
+
 EXPOSE 8000
 
-#  Environment variables (non-sensitive)
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
-ENV MONGO_DB_URL="mongodb+srv://anmolkushwaha25807890_db_user:Kush2580@cluster0.arfl0if.mongodb.net/?appName=Cluster0"
-ENV MLFLOW_TRACKING_URI="https://dagshub.com/AnmolKumarKushwaha/networksecurity-combined.mlflow"
-ENV MLFLOW_TRACKING_USERNAME="AnmolKumarKushwaha"
-
-#  Add these for DagsHub fix
-ENV MLFLOW_EXPERIMENTAL_OAUTH2=false
-ENV MLFLOW_TRACKING_INSECURE_TLS=true
-ENV GIT_PYTHON_REFRESH=quiet
-
-
-#  Default command to run your FastAPI app
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start FastAPI using the configured port
+CMD ["sh", "-c", "exec uvicorn app:app --host 0.0.0.0 --port \"${PORT:-8000}\""]

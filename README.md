@@ -1,5 +1,10 @@
 # Network Security Phishing Detection
 
+Live application: https://phishingwebsitedetection-ml-project.onrender.com
+Live application: https://phishingwebsitedetection-ml-project-image.onrender.com
+
+Docker Image: https://hub.docker.com/r/anmolkumarkushwaha/phishingwebsitedetection-ml-project
+
 ## Dashboard Preview
 
 ![Dashboard preview - overview](notebooks/First.png)
@@ -10,7 +15,7 @@
 
 ![API documentation](notebooks/APIs.png)
 
-**An end-to-end machine learning application for detecting phishing   websites from URL and webpage security features.**
+**An end-to-end machine learning application for detecting phishing websites from URL and webpage security features.**
 
 The project combines:
 
@@ -341,14 +346,260 @@ MongoDB readiness is checked with a database ping. Model readiness confirms that
 
 ## Docker
 
-Build and run the container after providing environment variables securely:
+  Build and run the container after providing environment variables securely:
 
-```powershell
-docker build -t network-security-app .
-docker run --env-file .env -p 8000:8000 network-security-app
+  ```powershell
+  docker build -t network-security-app .
+  docker run --env-file .env -p 8000:8000 network-security-app
+  ```
+
+  The application listens on port `8000`.
+
+  ## Deployment Using Docker and Render
+
+  The application is packaged as a Docker image, pushed to Docker Hub, and deployed on Render as a web service.
+
+  ### 1. Prerequisites
+
+  Before starting, ensure you have:
+
+  - Docker Desktop installed and running.
+  - A Docker Hub account.
+  - A Render account.
+  - MongoDB Atlas credentials.
+  - DagsHub credentials for MLflow experiment tracking.
+  - Trained model and preprocessor files inside `final_model/`.
+
+  Run all build commands from the project root directory.
+
+  ### 2. Create the Dockerfile
+
+  The project root contains this Dockerfile:
+
+  ```dockerfile
+  FROM python:3.14-slim
+
+  WORKDIR /app
+
+  ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8000
+
+  # Install Git and HTTPS certificates
+  RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+  # Copy application files
+  COPY . .
+
+  # Install dependencies
+  RUN python -m pip install --no-cache-dir -r requirements.txt
+
+  EXPOSE 8000
+
+  # Start the FastAPI application
+  CMD ["sh", "-c", "exec uvicorn app:app --host 0.0.0.0 --port \"${PORT:-8000}\""]
+  ```
+
+  The application creates its output directories during execution. Python and dependency versions must be compatible with the saved model files.
+
+  ### 3. Configure `.dockerignore`
+
+  Exclude local environments, credentials, and generated outputs:
+
+  ```dockerignore
+  # Virtual environments
+  venv/
+  .venv/
+
+  # Generated files and local working data
+  notebooks/
+  Network_Data/
+  Artifacts/
+  valid_data/
+  prediction_output/
+  logs/
+
+  # Python cache
+  **/__pycache__/
+  *.pyc
+  *.pyo
+  *.pyd
+  *.log
+
+  # Git and environment files
+  .git/
+  .github/
+  .gitignore
+  .env
+  .env.*
+  !.env.example
+  mlflow.db
+
+  # Editor and OS files
+  .DS_Store
+  .idea/
+  .vscode/
+  ```
+
+  Keep `final_model/`, `data_schema/`, application code, and HTML templates included in the image. Only exclude `Network_Data/` if its contents are generated or supplied at runtime.
+
+  ### 4. Configure Environment Variables
+
+  Create a local `.env` file:
+
+  ```dotenv
+  MONGO_DB_URL=your_mongodb_connection_string
+  MLFLOW_TRACKING_URI=https://dagshub.com/AnmolKumarKushwaha/PhishingWebsiteDetection-ML-Project.mlflow
+  MLFLOW_TRACKING_USERNAME=AnmolKumarKushwaha
+  MLFLOW_TRACKING_PASSWORD=your_dagshub_access_token
+  ```
+
+  Replace the placeholder values with your credentials. Use your own DagsHub repository and username when deploying a fork. Do not commit `.env` to GitHub or include it in the Docker image. Add `.env` to `.gitignore` as well.
+
+  The application receives these variables when the container starts.
+
+  ### 5. Build the Docker Image
+
+  ```bash
+  docker build -t anmolkumarkushwaha/phishingwebsitedetection-ml-project:latest .
+  ```
+
+  The final `.` specifies the current directory as the build context.
+
+  ### 6. Run and Test Locally
+
+  ```bash
+  docker run -p 8000:8000 --env-file .env anmolkumarkushwaha/phishingwebsitedetection-ml-project:latest
+  ```
+
+  Run this command from the folder containing `.env`, or provide its full path. Open:
+
+  - Dashboard: http://localhost:8000
+  - API documentation: http://localhost:8000/docs
+  - Health endpoint: http://localhost:8000/health
+
+  Keep the container running while testing. Use `localhost:8000` in your browser rather than the `0.0.0.0:8000` listening address shown in the logs. Verify the API workflow.
+
+  ### 7. Push the Image to Docker Hub
+
+  Log in and push the tested image:
+
+  ```bash
+  docker login
+  docker push anmolkumarkushwaha/phishingwebsitedetection-ml-project:latest
+  ```
+
+  A successful push ends with a digest similar to `latest: digest: sha256:...`. Docker Hub stores the image; it does not run the application.
+
+  ### 8. Deploy the Image on Render
+
+  1. Open the Render dashboard.
+  2. Select **New -> Web Service**.
+  3. Choose **Existing Image**.
+  4. Enter `docker.io/anmolkumarkushwaha/phishingwebsitedetection-ml-project:latest`.
+  5. Click **Connect**.
+  6. Choose a service name, region, and compute plan.
+  7. For a private image, provide Docker Hub credentials with pull access.
+  8. Leave the Docker Command override empty to use the image's `CMD`.
+
+  See [Render's image deployment documentation](https://render.com/docs/deploying-an-image).
+
+  ### 9. Add Environment Variables on Render
+
+  Add these keys in the service's **Environment** settings:
+
+  | Key | Value |
+  |---|---|
+  | `MONGO_DB_URL` | Your MongoDB Atlas connection string |
+  | `MLFLOW_TRACKING_URI` | `https://dagshub.com/AnmolKumarKushwaha/PhishingWebsiteDetection-ML-Project.mlflow` |
+  | `MLFLOW_TRACKING_USERNAME` | Your DagsHub username |
+  | `MLFLOW_TRACKING_PASSWORD` | Your DagsHub access token |
+
+  Render does not read the `.env` file on your computer. Configure the values directly in Render. Ensure MongoDB Atlas network access permits connections from the Render service and that the Python code does not override the tracking URL with an old repository address.
+
+  ### 10. Deploy and Verify
+
+  Click **Deploy web service** and monitor the logs. Confirm that FastAPI starts, MongoDB connects, the saved model and preprocessor load, and the service becomes live. Open the public URL provided by Render, then test the dashboard, `/health`, and `/docs`.
+
+  Render runs its own container. The deployed application does not depend on your laptop or local Docker Desktop container remaining running.
+
+  **Manual Deploy -> Deploy latest reference**
+
+  Updating the Docker Hub `latest` tag does not automatically redeploy an image-based Render service.
+
+  ### Runtime Storage and Availability
+
+  - Generated training artifacts and prediction files are stored inside the running container unless persistent storage is configured.
+  - Runtime-generated files are not added back to the Docker Hub image.
+  - MongoDB records and successfully logged remote MLflow data remain in their respective external services.
+  - Free Render services can sleep when idle and take time to wake up. Training may require more resources than the selected instance provides.
+  - Keep the deployed image available on Docker Hub because Render may need to pull it again for deployment or recovery.
+
+  ### Troubleshooting
+
+  | Problem | What to check |
+  |---|---|
+  | `docker` command not found | Docker Desktop installation and terminal PATH |
+  | Docker engine unavailable | Start Docker Desktop and verify `docker version` |
+
+  To inspect a container's recent logs:
+
+  ```bash
+  docker ps -a
+  docker logs --tail 100 CONTAINER_ID
+  ```
+
+  Replace `CONTAINER_ID` with the ID shown by `docker ps -a`.
+
+## Docker Hub, Docker Desktop, and Render
+
+| Tool | Purpose |
+|---|---|
+| Docker Hub | Stores and shares Docker images online. It does not run the application. |
+| Docker Desktop | Lets you pull images from Docker Hub and run containers locally with the required environment variables. Publishing port `8000` makes this application accessible at `http://localhost:8000`. |
+| Render | Runs the application on its servers and provides a public URL. |
+
+### What Happens If an Image or Container Is Deleted?
+
+| Scenario | Effect on the Render Deployment |
+|---|---|
+| The local container stops or crashes | Render continues running independently. |
+| The image is deleted from your computer | The Render deployment is unaffected. |
+| The image is deleted from Docker Hub | The running Render container may continue working, but future deployments or restarts requiring a fresh image pull can fail. |
+
+Keep the deployed image available on Docker Hub because Render may need to pull it again.
+
+An image does not crash; it is a packaged application. A running container can crash.
+
+### Accessing the Application Locally
+
+Pull the image from Docker Hub:
+
+```bash
+docker pull anmolkumarkushwaha/phishingwebsitedetection-ml-project:latest
 ```
 
-The application listens on port `8000`.
+Create a local `.env` file containing the required MongoDB and MLflow/DagsHub configuration.
+
+Run the following command from the folder containing `.env`:
+
+```bash
+docker run -p 8000:8000 --env-file .env anmolkumarkushwaha/phishingwebsitedetection-ml-project:latest
+```
+
+The `--env-file .env` option supplies environment variables to the container. The `-p 8000:8000` option forwards port `8000` on your computer to port `8000` inside the container.
+
+Then open:
+
+- Dashboard: http://localhost:8000
+- API documentation: http://localhost:8000/docs
+- Health endpoint: http://localhost:8000/health
+
+Keep Docker Desktop and the container running while using the local application. The `0.0.0.0:8000` address shown in server logs is a listening address; use `localhost:8000` or `127.0.0.1:8000` in your browser.
+
+The Render deployment runs independently. Stopping the local container or shutting down your computer does not stop the application hosted on Render.
 
 ## Future Features
 

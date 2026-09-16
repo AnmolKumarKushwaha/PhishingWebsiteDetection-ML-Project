@@ -10,7 +10,6 @@ urllib3
 pymongo[srv]
 pymongo
 certifi
-pymongo
 
 # --- Config & Utilities ---
 pyyaml
