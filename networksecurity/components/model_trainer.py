@@ -42,11 +42,7 @@ from urllib.parse import urlparse
 mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
 dagshub.auth.add_app_token(os.environ["MLFLOW_TRACKING_PASSWORD"])
 
-dagshub.init(
-    repo_owner="AnmolKumarKushwaha",
-    repo_name="networksecurity-combined",
-    mlflow=True
-)
+dagshub.init(repo_owner='AnmolKumarKushwaha', repo_name='PhishingWebsiteDetection-ML-Project', mlflow=True)
 
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,data_transformation_artifact:DataTransformationArtifact):
@@ -77,9 +73,9 @@ class ModelTrainer:
                 mlflow.sklearn.log_model(
                     sk_model=best_model,
                     artifact_path="model",
-                    registered_model_name="NetworkSecurityModelCombined"
+                    registered_model_name="PhishingWebsiteDetection-ML-Model"
                 )
-                logging.info(f"Model logged in mlflow model registry as NetworkSecurityModel")
+                logging.info(f"Model logged in mlflow model registry as PhishingWebsiteDetection-ML-Model")
 
             
             print("Run ID:", run.info.run_id)

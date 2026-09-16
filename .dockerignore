@@ -8,7 +8,6 @@ Artifacts/
 valid_data/
 prediction_output/
 logs/
-# data_schema/
 
 # Python cache
 __pycache__/
@@ -21,6 +20,10 @@ __pycache__/
 .git/
 .github/
 .gitignore
+.env
+.env.*
+!.env.example
+mlflow.db
 
 # OS and IDE
 .DS_Store

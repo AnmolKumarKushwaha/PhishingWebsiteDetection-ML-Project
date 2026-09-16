@@ -1,0 +1,36 @@
+[ 2026-09-16 13:29:55,601 ] 86 dagshub.auth.tokens - WARNING - The added token already exists in the token cache, skipping
+[ 2026-09-16 13:30:01,956 ] 1025 httpx - INFO - HTTP Request: GET https://dagshub.com/api/v1/user "HTTP/1.1 200 OK"
+[ 2026-09-16 13:30:01,978 ] 107 dagshub - INFO - Accessing as AnmolKumarKushwaha
+[ 2026-09-16 13:30:05,833 ] 1025 httpx - INFO - HTTP Request: GET https://dagshub.com/api/v1/repos/AnmolKumarKushwaha/PhishingWebsiteDetection-ML-Project "HTTP/1.1 200 OK"
+[ 2026-09-16 13:30:06,649 ] 1025 httpx - INFO - HTTP Request: GET https://dagshub.com/api/v1/user "HTTP/1.1 200 OK"
+[ 2026-09-16 13:30:06,658 ] 107 dagshub - INFO - Initialized MLflow to track repo "AnmolKumarKushwaha/PhishingWebsiteDetection-ML-Project"
+[ 2026-09-16 13:30:06,662 ] 107 dagshub - INFO - Repository AnmolKumarKushwaha/PhishingWebsiteDetection-ML-Project initialized!
+[ 2026-09-16 15:07:41,495 ] 42 root - INFO - Start data Ingestion
+[ 2026-09-16 15:07:44,952 ] 65 root - INFO - Performed train test split on the dataframe
+[ 2026-09-16 15:07:44,952 ] 67 root - INFO - Exited split_data_as_train_test method of Data_Ingestion class
+[ 2026-09-16 15:07:44,954 ] 75 root - INFO - Exporting train and test file path.
+[ 2026-09-16 15:07:45,147 ] 84 root - INFO - Exported train and test file path.
+[ 2026-09-16 15:07:45,149 ] 45 root - INFO - Data Ingestion completed and artifact: DataIngestionArtifact(trained_file_path='Artifacts\\09_16_2026_13_29_46\\data_ingestion\\ingested\\train.csv', test_file_path='Artifacts\\09_16_2026_13_29_46\\data_ingestion\\ingested\\test.csv')
+[ 2026-09-16 15:07:45,172 ] 55 root - INFO - Initiate the data Validation
+[ 2026-09-16 15:07:45,312 ] 32 root - INFO - Required number of columns:2
+[ 2026-09-16 15:07:45,313 ] 33 root - INFO - Data frame has columns:31
+[ 2026-09-16 15:07:45,313 ] 32 root - INFO - Required number of columns:2
+[ 2026-09-16 15:07:45,313 ] 33 root - INFO - Data frame has columns:31
+[ 2026-09-16 15:07:45,688 ] 63 root - INFO - Entered initiate_data_transformation method of DataTransformation class
+[ 2026-09-16 15:07:45,689 ] 65 root - INFO - Starting data transformation
+[ 2026-09-16 15:07:45,753 ] 48 root - INFO - Entered get_data_trnasformer_object method of Trnasformation class
+[ 2026-09-16 15:07:45,755 ] 53 root - INFO - Initialise KNNImputer with {'missing_values': nan, 'n_neighbors': 3, 'weights': 'uniform'}
+[ 2026-09-16 15:07:45,987 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-16 15:07:45,989 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-16 15:07:45,990 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-16 15:07:45,993 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-16 15:11:59,393 ] 70 root - INFO - Folder logged as artifacts!
+[ 2026-09-16 15:11:59,397 ] 82 root - INFO - Folder logged as artifacts! :4b61fc79449647918b1e9ac5f7814295
+[ 2026-09-16 15:12:14,048 ] 70 root - INFO - Folder logged as artifacts!
+[ 2026-09-16 15:12:59,389 ] 78 root - INFO - Model logged in mlflow model registry as PhishingWebsiteDetection-ML-Model
+[ 2026-09-16 15:12:59,389 ] 82 root - INFO - Folder logged as artifacts! :6bece665cf2c4dc593d32d68f849bd16
+[ 2026-09-16 15:13:00,068 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-16 15:13:00,097 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-16 15:13:00,097 ] 46 root - INFO - Entered the save_object method of MainUtils class
+[ 2026-09-16 15:13:00,120 ] 50 root - INFO - Exited the save_object method of MainUtils class
+[ 2026-09-16 15:13:00,120 ] 195 root - INFO - Model trainer artifact: ModelTrainerArtifact(trained_model_file_path='Artifacts\\09_16_2026_13_29_46\\model_trainer\\trained_model\\model.pkl', train_metric_artifact=ClassificationMetricArtifact(f1_score=0.9916000404817327, precision_score=0.9896969696969697, recall_score=0.9935104441289799), test_metric_artifact=ClassificationMetricArtifact(f1_score=0.9736735520453625, precision_score=0.9670152855993563, recall_score=0.9804241435562806))

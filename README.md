@@ -130,7 +130,7 @@ The training stage loads the transformed NumPy arrays and evaluates:
 The test-evaluation run registers the selected classifier in the MLflow Model Registry on DagsHub with the registered model name:
 
 ```text
-NetworkSecurityModelCombined
+PhishingWebsiteDetection-ML-Model(V1)
 ```
 
 The latest local inference artifacts are:
